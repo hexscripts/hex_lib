@@ -101,14 +101,32 @@ Citizen.CreateThread(function()
         end
 
         function Framework.Functions.GetVehicleProperties(vehicle)
-            return ESX.Game.GetVehicleProperties(vehicle)
+            local vehicleProperties = ESX.Game.GetVehicleProperties(vehicle)
+
+            if GetResourceState('hex_1_fuel') == 'started' then
+                vehicleProperties.fuelLevel = exports['hex_1_fuel']:GetFuel(vehicle)
+            elseif GetResourceState('hex_2_fuel') == 'started' then
+                vehicleProperties.fuelLevel = exports['hex_2_fuel']:GetFuel(vehicle)
+            elseif GetResourceState('hex_3_fuel') == 'started' then
+                vehicleProperties.fuelLevel = exports['hex_3_fuel']:GetFuel(vehicle)
+            end
+
+            return vehicleProperties
         end
 
         function Framework.Functions.SpawnedVehicle(vehicle, vehicleProps)
             local ped = PlayerPedId()
-            
+
             ESX.Game.SetVehicleProperties(vehicle, vehicleProps)
-    
+
+            if GetResourceState('hex_1_fuel') == 'started' then
+                exports['hex_1_fuel']:SetFuel(vehicle, vehicleProps.fuelLevel)
+            elseif GetResourceState('hex_2_fuel') == 'started' then
+                exports['hex_2_fuel']:SetFuel(vehicle, vehicleProps.fuelLevel)
+            elseif GetResourceState('hex_3_fuel') == 'started' then
+                exports['hex_3_fuel']:SetFuel(vehicle, vehicleProps.fuelLevel)
+            end
+
             SetVehRadioStation(vehicle, 'OFF')
             SetPedIntoVehicle(ped, vehicle, -1)
         end
